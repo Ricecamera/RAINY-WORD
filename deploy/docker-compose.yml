@@ -1,0 +1,13 @@
+services:
+  rainy-words-server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "5555:5555"
+    volumes:
+      - rainy-words-data:/data
+    restart: unless-stopped
+
+volumes:
+  rainy-words-data:

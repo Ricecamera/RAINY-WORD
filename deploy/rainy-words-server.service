@@ -1,0 +1,23 @@
+# Headless systemd unit (no Tkinter GUI). Install with:
+#   sudo cp deploy/rainy-words-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now rainy-words-server
+#
+# If you want the Tkinter admin GUI instead, don't use this unit - run
+# `python3 -m server.main` by hand inside your VNC desktop session (see
+# deploy/DEPLOY.md), since a systemd service normally has no display.
+[Unit]
+Description=Rainy Words game server (headless)
+After=network.target
+
+[Service]
+Type=simple
+User=rainywords
+WorkingDirectory=/opt/rainy-words
+Environment=RAINY_WORDS_DB=/opt/rainy-words/data/rainy_words.db
+ExecStart=/opt/rainy-words/.venv/bin/python -m server.main --headless
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
