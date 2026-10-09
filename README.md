@@ -16,15 +16,16 @@ authenticated, cloud-hosted setup:
   client disconnects (or the server restarts), a player who logs back in
   is dropped straight back into their in-progress match with their score
   and remaining time intact.
-- **Admin/status UI**: a Tkinter window on the server shows connected
-  clients, active matches, the current word set, and a reset button - see
-  `deploy/DEPLOY.md` for viewing it on a cloud VM over VNC.
+- **Admin/status UI**: a small website (served by the server process
+  itself, no extra dependencies, password-protected) shows connected
+  clients, active matches, the current word set, and a reset button - no
+  desktop or VNC needed, just a browser. See `deploy/DEPLOY.md`.
 
 ## Project layout
 
 ```
 shared/    protocol (JSON-lines over TCP) + word list, used by both sides
-server/    socket server, game logic, SQLite persistence, admin GUI
+server/    socket server, game logic, SQLite persistence, web admin dashboard
 client/    pygame desktop client
 deploy/    Dockerfile, systemd unit, and the cloud deployment guide
 ```
@@ -34,11 +35,13 @@ deploy/    Dockerfile, systemd unit, and the cloud deployment guide
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # only needed for the client (pygame) -
+                                   # the server has no third-party dependencies
 
 # terminal 1
-python -m server.main            # opens the Tkinter admin window
-# or: python -m server.main --headless   # console status instead
+python -m server.main --print-status
+# prints the admin dashboard URL + a one-time password, e.g.
+#   Admin dashboard: http://127.0.0.1:8080/  (user: admin)
 
 # terminal 2 and 3 (two players)
 python -m client.main
@@ -46,14 +49,15 @@ python -m client.main
 ```
 
 Each client logs in or registers its own account, then the server pairs
-the first two waiting players into a match automatically.
+the first two waiting players into a match automatically. Open the admin
+dashboard URL in a browser to watch status live and reset the game.
 
 ## Deploying to the cloud
 
 See [`deploy/DEPLOY.md`](deploy/DEPLOY.md) for a step-by-step guide to
-running the server on a cloud VM with the admin GUI reachable over VNC,
-opening the game port for remote players, and pointing client installs at
-your instance.
+running the server on a cloud VM (fully headless - the admin dashboard is
+just a website), opening the game port for remote players, and pointing
+client installs at your instance.
 
 ## Protocol
 
