@@ -1,0 +1,21 @@
+services:
+  rainy-words-server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "5555:5555"
+      # Bound to the host's loopback only by default - reach it via an SSH
+      # tunnel, or change to "8080:8080" (behind a TLS reverse proxy,
+      # ideally) if you want it reachable directly from the internet.
+      - "127.0.0.1:8080:8080"
+    environment:
+      # Set a stable admin password instead of a fresh random one each
+      # restart. Required if you don't tail the container logs.
+      - RAINY_WORDS_ADMIN_PASSWORD=${RAINY_WORDS_ADMIN_PASSWORD:-}
+    volumes:
+      - rainy-words-data:/data
+    restart: unless-stopped
+
+volumes:
+  rainy-words-data:

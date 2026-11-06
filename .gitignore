@@ -141,6 +141,10 @@ mnesia/
 rabbitmq/
 rabbitmq-data/
 
+# Rainy Words runtime data
+data/*.db
+data/*.db-journal
+
 # ActiveMQ
 activemq-data/
 

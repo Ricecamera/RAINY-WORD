@@ -1,0 +1,23 @@
+# systemd unit for the Rainy Words game server. Install with:
+#   sudo cp deploy/rainy-words-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now rainy-words-server
+#
+# View logs (and the auto-generated admin password, if you didn't set one
+# below) with: journalctl -u rainy-words-server -f
+[Unit]
+Description=Rainy Words game server
+After=network.target
+
+[Service]
+Type=simple
+User=rainywords
+WorkingDirectory=/opt/rainy-words
+Environment=RAINY_WORDS_DB=/opt/rainy-words/data/rainy_words.db
+# Environment=RAINY_WORDS_ADMIN_PASSWORD=change-me
+ExecStart=/usr/bin/python3 -m server.main --print-status
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
